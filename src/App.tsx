@@ -61,6 +61,13 @@ function App() {
     setGroups(newGroups);
   };
 
+  const resetAll = () => {
+    if (window.confirm('すべての入力をリセットして最初からやり直しますか？')) {
+      const defaultGrades = pattern === 'pattern1' ? [0, 0, 0, 0, 0] : Array(10).fill(0);
+      setGroups([{ id: '1', credits: 2, grades: defaultGrades }]);
+    }
+  };
+
   const stats = useMemo(() => {
     let totalCredits = 0;
     let totalPoints = 0;
@@ -93,6 +100,13 @@ function App() {
           <p className="gpa-label">算定GPA</p>
           <div className="gpa-value">{stats.gpa}</div>
           <p className="gpa-label">総履修単位数: {stats.totalCredits}</p>
+          <button 
+            className="btn btn-outline" 
+            onClick={resetAll} 
+            style={{ marginTop: '1.5rem', fontSize: '0.875rem', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}
+          >
+            最初からやり直す（リセット）
+          </button>
         </div>
       </header>
 

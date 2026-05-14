@@ -9,17 +9,20 @@ interface SmartImportProps {
 
 export const SmartImport: React.FC<SmartImportProps> = ({ onImport }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const processText = useCallback((text: string) => {
     const results = parseTranscriptText(text);
     if (results.length === 0) {
-      setError('文字が見つからないか、評価パターンを認識できませんでした。手入力をお試しください。');
+      setError('有効なデータが見つかりませんでした。テキストを直接貼り付けるか、別の画像を試してください。');
       return;
     }
     const aggregated = aggregateResults(results);
     onImport(aggregated);
+    setIsSuccess(true);
+    setTimeout(() => setIsSuccess(false), 3000);
   }, [onImport]);
 
   const processImage = async (file: File | Blob) => {
@@ -94,8 +97,22 @@ export const SmartImport: React.FC<SmartImportProps> = ({ onImport }) => {
             </p>
           </>
         )}
+        {isSuccess && !isProcessing && (
+          <div className="loading-overlay" style={{ background: 'rgba(34, 197, 94, 0.9)', color: 'white' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>読み込み完了！</div>
+            <p>結果が更新されました</p>
+          </div>
+        )}
       </div>
-      {error && <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{error}</p>}
+      
+      {error && <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center', marginTop: '0.5rem' }}>{error}</p>}
+      
+      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+          <Info size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+          貼り付けや画像アップロードは何度でも行えます。
+        </p>
+      </div>
     </div>
   );
 };
