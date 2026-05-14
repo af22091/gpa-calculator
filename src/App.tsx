@@ -120,6 +120,19 @@ function App() {
 
       <main className="glass-card">
         <div className="input-group">
+          <div className="section-title"><School size={20} /> 解析モードの選択</div>
+          <select value={mode} onChange={(e) => setMode(e.target.value as AppMode)}>
+            <option value="general">標準モード（汎用）</option>
+            <option value="shibaura">芝浦工業大学モード</option>
+          </select>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            {mode === 'shibaura' 
+              ? '芝浦工大の3列レイアウトと透かし背景に最適化された解析を行います。' 
+              : '一般的な成績表の形式で解析を行います。'}
+          </p>
+        </div>
+
+        <div className="input-group">
           <div className="section-title">計算パターンの選択</div>
           <div className="radio-group">
             <input type="radio" id="p1" name="pattern" checked={pattern === 'pattern1'} onChange={() => {
@@ -146,19 +159,6 @@ function App() {
             </select>
           </div>
         )}
-
-        <div className="input-group">
-          <div className="section-title"><School size={20} /> 解析モードの選択</div>
-          <select value={mode} onChange={(e) => setMode(e.target.value as AppMode)}>
-            <option value="general">標準モード（汎用）</option>
-            <option value="shibaura">芝浦工業大学モード</option>
-          </select>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            {mode === 'shibaura' 
-              ? '芝浦工大の3列レイアウトと透かし背景に最適化された解析を行います。' 
-              : '一般的な成績表の形式で解析を行います。'}
-          </p>
-        </div>
 
         <SmartImport onImport={handleSmartImport} mode={mode} />
 
