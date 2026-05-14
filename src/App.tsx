@@ -54,12 +54,36 @@ function App() {
   };
 
   const handleSmartImport = (importedData: Record<number, number[]>) => {
-    const newGroups: CreditGroupData[] = Object.entries(importedData).map(([credits, grades]) => ({
-      id: Math.random().toString(36).substr(2, 9),
-      credits: parseInt(credits, 10),
-      grades: pattern === 'pattern1' ? grades : Array(10).fill(0)
-    }));
-    setGroups(newGroups);
+    setGroups(prev => {
+      const newGroups = [...prev];
+      
+      Object.entries(importedData).forEach(([creditsStr, newGrades]) => {
+        const credits = parseInt(creditsStr, 10);
+        const existingGroupIndex = newGroups.findIndex(g => g.credits === credits);
+        
+        if (existingGroupIndex > -1) {
+          // 既存のグループがある場合は合算
+          newGroups[existingGroupIndex] = {
+            ...newGroups[existingGroupIndex],
+            grades: newGroups[existingGroupIndex].grades.map((count, i) => count + (newGrades[i] || 0))
+          };
+        } else {
+          // 新しい単位数の場合は新規追加
+          newGroups.push({
+            id: Math.random().toString(36).substr(2, 9),
+            credits,
+            grades: pattern === 'pattern1' ? newGrades : Array(10).fill(0)
+          });
+        }
+      });
+      
+      // 最初にある空のデフォルトグループ（1個だけ & 中身が全部0の場合）を削除
+      if (newGroups.length > 1 && newGroups[0].grades.every(v => v === 0)) {
+        newGroups.shift();
+      }
+      
+      return newGroups;
+    });
   };
 
   const resetAll = () => {
