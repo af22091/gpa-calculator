@@ -101,9 +101,16 @@ function App() {
           <div className="gpa-value">{stats.gpa}</div>
           <p className="gpa-label">総履修単位数: {stats.totalCredits}</p>
           <button 
-            className="btn btn-outline" 
+            className="btn" 
             onClick={resetAll} 
-            style={{ marginTop: '1.5rem', fontSize: '0.875rem', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}
+            style={{ 
+              marginTop: '1.5rem', 
+              fontSize: '0.875rem', 
+              backgroundColor: 'white', 
+              color: 'var(--primary)',
+              padding: '0.625rem 1.25rem',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}
           >
             最初からやり直す（リセット）
           </button>
