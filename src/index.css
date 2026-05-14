@@ -148,18 +148,16 @@ select:focus {
   border-color: var(--primary);
 }
 
-/* 選択肢（option）の文字色を確実に黒くする */
 select option {
   color: #1e293b;
   background: #ffffff;
-  padding: 1rem;
 }
 
 .credit-group {
   background: #f8fafc;
   border-radius: 1.25rem;
   padding: 1.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   border: 1px solid var(--border-color);
 }
 
@@ -167,12 +165,12 @@ select option {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .grid-inputs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
 }
 
@@ -188,21 +186,70 @@ select option {
   color: var(--text-muted);
 }
 
-input[type="number"] {
+/* カウンターコントロールのスタイル */
+.counter-control {
+  display: flex;
+  align-items: center;
   background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
-  padding: 0.625rem;
-  color: var(--text-main);
-  font-size: 1.125rem;
-  font-weight: 600;
-  text-align: center;
+  overflow: hidden;
+  transition: border-color 0.2s;
 }
 
-input[type="number"]:focus {
-  outline: none;
+.counter-control:focus-within {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.counter-control input[type="number"] {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  padding: 0.625rem 0.25rem;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.counter-control input[type="number"]::-webkit-inner-spin-button,
+.counter-control input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.count-btn {
+  background: #f1f5f9;
+  border: none;
+  color: var(--text-main);
+  width: 40px;
+  height: 44px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.count-btn:hover {
+  background: #e2e8f0;
+}
+
+.count-btn:active {
+  background: #cbd5e1;
+}
+
+.counter-control.small .count-btn {
+  width: 32px;
+  height: 36px;
+}
+
+.counter-control.small input[type="number"] {
+  width: 50px;
+  padding: 0.4rem 0.25rem;
+  font-size: 1rem;
 }
 
 .btn {
@@ -245,24 +292,19 @@ input[type="number"]:focus {
   border: 2px dashed var(--glass-border);
   background: rgba(99, 102, 241, 0.02);
   border-radius: 1.5rem;
-  padding: 3.5rem 2rem;
+  padding: 2.5rem 1.5rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   position: relative;
   overflow: hidden;
 }
 
-.smart-import-zone:hover {
-  border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.05);
-}
-
 .import-icon {
-  width: 56px;
-  height: 56px;
-  margin-bottom: 1.25rem;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
   color: var(--primary);
   opacity: 0.8;
 }
@@ -283,13 +325,13 @@ input[type="number"]:focus {
 }
 
 .spinner {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border: 4px solid #f1f5f9;
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
@@ -297,9 +339,14 @@ input[type="number"]:focus {
 }
 
 @media (max-width: 640px) {
-  h1 { font-size: 2rem; }
-  .gpa-value { font-size: 3.5rem; }
-  .grid-inputs { grid-template-columns: repeat(2, 1fr); }
-  .container { padding: 1rem; }
-  .glass-card { padding: 1.5rem; }
+  h1 { font-size: 1.75rem; }
+  .gpa-value { font-size: 3rem; }
+  .grid-inputs { grid-template-columns: 1fr 1fr; }
+  .container { padding: 1rem 0.5rem; }
+  .glass-card { padding: 1.25rem; }
+  .gpa-display { padding: 1.5rem 1rem; }
+}
+
+@media (max-width: 380px) {
+  .grid-inputs { grid-template-columns: 1fr; }
 }

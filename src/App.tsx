@@ -145,11 +145,15 @@ function App() {
           <div className="section-title"><Calculator size={20} /> 科目数の一括入力</div>
           {groups.map((group) => (
             <div key={group.id} className="credit-group">
-              <div className="credit-group-header">
-                <div className="input-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
-                  <label>単位数:</label>
-                  <input type="number" value={group.credits} onChange={(e) => updateCredits(group.id, parseInt(e.target.value) || 0)} style={{ width: '60px' }} />
-                </div>
+                <div className="credit-group-header">
+                  <div className="input-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+                    <label>単位数:</label>
+                    <div className="counter-control small">
+                      <button className="count-btn" onClick={() => updateCredits(group.id, group.credits - 1)}>−</button>
+                      <input type="number" value={group.credits} onChange={(e) => updateCredits(group.id, parseInt(e.target.value) || 0)} />
+                      <button className="count-btn" onClick={() => updateCredits(group.id, group.credits + 1)}>+</button>
+                    </div>
+                  </div>
                 {groups.length > 1 && (
                   <button className="btn btn-outline" onClick={() => removeGroup(group.id)} style={{ padding: '0.5rem', color: '#ef4444' }}>
                     <Trash2 size={16} />
@@ -160,7 +164,11 @@ function App() {
                 {labels.map((label, i) => (
                   <div key={i} className="input-field">
                     <label>{label}</label>
-                    <input type="number" min="0" value={group.grades[i] || 0} onChange={(e) => updateGrade(group.id, i, parseInt(e.target.value) || 0)} />
+                    <div className="counter-control">
+                      <button className="count-btn" onClick={() => updateGrade(group.id, i, (group.grades[i] || 0) - 1)}>−</button>
+                      <input type="number" min="0" value={group.grades[i] || 0} onChange={(e) => updateGrade(group.id, i, parseInt(e.target.value) || 0)} />
+                      <button className="count-btn" onClick={() => updateGrade(group.id, i, (group.grades[i] || 0) + 1)}>+</button>
+                    </div>
                   </div>
                 ))}
               </div>
