@@ -9,8 +9,7 @@ export interface ParseResult {
 export const parseTranscriptText = (text: string): ParseResult[] => {
   // 背景の透かし文字を一時的に除去（判定用）
   const cleanText = text.replace(/SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学/gi, ' ');
-  
-  const lines = text.split(/\n/); // オリジナルの行を保持
+  const lines = cleanText.split(/\n/);
   const results: ParseResult[] = [];
 
   const gradeKeys = ['S', 'A', 'B', 'C', 'D', '秀', '優', '良', '可', '不', '不可'];

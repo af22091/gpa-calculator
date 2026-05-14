@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { createWorker } from 'tesseract.js';
 import { FileUp, Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
-import { parseTranscriptText, aggregateResults, ParseResult } from '../utils/parser';
+import { parseTranscriptText, aggregateResults, type ParseResult } from '../utils/parser';
 
 interface SmartImportProps {
   onImport: (data: Record<number, number[]>) => void;
