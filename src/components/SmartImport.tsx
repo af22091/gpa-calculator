@@ -1,13 +1,16 @@
 import React, { useState, useCallback } from 'react';
 import { createWorker } from 'tesseract.js';
-import { FileUp, Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileUp, Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, School } from 'lucide-react';
 import { parseTranscriptText, aggregateResults, type ParseResult } from '../utils/parser';
+
+export type AppMode = 'general' | 'shibaura';
 
 interface SmartImportProps {
   onImport: (data: Record<number, number[]>) => void;
+  mode: AppMode;
 }
 
-export const SmartImport: React.FC<SmartImportProps> = ({ onImport }) => {
+export const SmartImport: React.FC<SmartImportProps> = ({ onImport, mode }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -16,7 +19,7 @@ export const SmartImport: React.FC<SmartImportProps> = ({ onImport }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const processText = useCallback((text: string) => {
-    const results = parseTranscriptText(text);
+    const results = parseTranscriptText(text, mode);
     setDetectedPairs(results);
     
     if (results.length === 0) {

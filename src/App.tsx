@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { SmartImport } from './components/SmartImport';
+import { SmartImport, type AppMode } from './components/SmartImport';
 import { 
   type Pattern, 
   type EvaluationPattern, 
@@ -7,7 +7,7 @@ import {
   PATTERN1_POINTS, 
   PATTERN2_POINTS 
 } from './constants';
-import { Plus, Trash2, Calculator } from 'lucide-react';
+import { Plus, Trash2, Calculator, School } from 'lucide-react';
 
 interface CreditGroupData {
   id: string;
@@ -17,6 +17,7 @@ interface CreditGroupData {
 
 function App() {
   const [pattern, setPattern] = useState<Pattern>('pattern1');
+  const [mode, setMode] = useState<AppMode>('general');
   const [evalPattern, setEvalPattern] = useState<EvaluationPattern>('set2');
   const [groups, setGroups] = useState<CreditGroupData[]>([
     { id: '1', credits: 2, grades: [0, 0, 0, 0, 0] }
@@ -146,7 +147,20 @@ function App() {
           </div>
         )}
 
-        <SmartImport onImport={handleSmartImport} />
+        <div className="input-group">
+          <div className="section-title"><School size={20} /> 解析モードの選択</div>
+          <select value={mode} onChange={(e) => setMode(e.target.value as AppMode)}>
+            <option value="general">標準モード（汎用）</option>
+            <option value="shibaura">芝浦工業大学モード</option>
+          </select>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            {mode === 'shibaura' 
+              ? '芝浦工大の3列レイアウトと透かし背景に最適化された解析を行います。' 
+              : '一般的な成績表の形式で解析を行います。'}
+          </p>
+        </div>
+
+        <SmartImport onImport={handleSmartImport} mode={mode} />
 
         <div className="input-group">
           <div className="section-title"><Calculator size={20} /> 科目数の一括入力</div>

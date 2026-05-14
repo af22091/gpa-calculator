@@ -6,23 +6,27 @@ export interface ParseResult {
   raw: string; // 読み取った生の文字列
 }
 
-export const parseTranscriptText = (text: string): ParseResult[] => {
-  // 背景の透かし文字を一時的に除去（判定用）
-  const cleanText = text.replace(/SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学/gi, ' ');
+export const parseTranscriptText = (text: string, mode: 'general' | 'shibaura' = 'general'): ParseResult[] => {
+  // 背景の透かし文字やヘッダーを一時的に除去
+  const noisePattern = mode === 'shibaura' 
+    ? /SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学|成績証明書|授業科目名|単位|成績/gi
+    : /SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学/gi;
+
+  const cleanText = text.replace(noisePattern, ' ');
   const lines = cleanText.split(/\n/);
   const results: ParseResult[] = [];
 
   const gradeKeys = ['S', 'A', 'B', 'C', 'D', '秀', '優', '良', '可', '不', '不可'];
   const gradePattern = gradeKeys.join('|');
   
-  const pairRegex = new RegExp(`(\\d)\\s*[^\\d\\n]{0,3}?\\s*(${gradePattern})`, 'gi');
+  // 芝浦モードでは縦棒などのノイズを考慮して5文字まで許容する
+  const pairRegex = mode === 'shibaura'
+    ? new RegExp(`(\\d)\\s*[^\\d\\n]{0,5}?\\s*(${gradePattern})`, 'gi')
+    : new RegExp(`(\\d)\\s*[^\\d\\n]{0,3}?\\s*(${gradePattern})`, 'gi');
 
   lines.forEach(line => {
-    // 判定はクリーンなテキストで行うが、表示用にオリジナルの行も参照
-    const searchLine = line.replace(/SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学/gi, ' ');
-    
     let match;
-    while ((match = pairRegex.exec(searchLine)) !== null) {
+    while ((match = pairRegex.exec(line)) !== null) {
       const credits = parseFloat(match[1]);
       const gradeRaw = match[2].toUpperCase();
       const gradeIndex = GRADE_ALIASES[gradeRaw];
@@ -31,7 +35,7 @@ export const parseTranscriptText = (text: string): ParseResult[] => {
         results.push({ 
           credits, 
           gradeIndex,
-          raw: match[0].trim() // 見つかったペア（例: "2 S"）
+          raw: match[0].trim() 
         });
       }
     }
