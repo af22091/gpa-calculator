@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { createWorker } from 'tesseract.js';
-import { FileUp, Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, School } from 'lucide-react';
+import { FileUp, Info, CheckCircle2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { parseTranscriptText, aggregateResults, type ParseResult } from '../utils/parser';
 
 export type AppMode = 'general' | 'shibaura';
