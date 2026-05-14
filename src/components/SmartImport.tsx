@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { createWorker } from 'tesseract.js';
-import { FileUp, Clipboard, Loader2, Info } from 'lucide-react';
+import { FileUp, Info } from 'lucide-react';
 import { parseTranscriptText, aggregateResults } from '../utils/parser';
 
 interface SmartImportProps {
