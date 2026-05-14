@@ -5,42 +5,35 @@ export interface ParseResult {
   gradeIndex: number;
 }
 
-/**
- * 複雑なレイアウト（多段組み）に対応した解析ロジック
- */
 export const parseTranscriptText = (text: string): ParseResult[] => {
-  // 1行に複数の科目が並んでいる場合があるため、スペース等で分割して解析
   const lines = text.split(/\n/);
   const results: ParseResult[] = [];
 
-  // 評価（S, A, B...）の正規表現を作成
-  const gradeKeys = Object.keys(GRADE_ALIASES).sort((a, b) => b.length - a.length);
-  const gradePattern = gradeKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  // 単一の文字（S, A, B, C）や特定の漢字（秀, 優...）を独立した単語として探す
+  // 背景の "SHIBAURA" などの単語内にある文字は無視する
+  const gradeKeys = ['S', 'A', 'B', 'C', 'D', '秀', '優', '良', '可', '不', '不可'];
+  const gradePattern = gradeKeys.join('|');
   
-  // 1単位〜4単位程度の数字と評価の組み合わせを探す
-  // 例: "2 S", "2単位 A", "A 2" など
-  const pairRegex = new RegExp(`(\\d(\\.\\d)?)\\s*(単位|credits|credit)?\\s*(${gradePattern})|(${gradePattern})\\s*(\\d(\\.\\d)?)`, 'gi');
+  // 単位数(1-4) と 評価 のペアを探す
+  // 芝浦工大の形式: "科目名 [単位数] [評価]" の並びを重視
+  // 単位数と評価の間に多少のノイズやスペースがあっても許容する
+  const pairRegex = new RegExp(`(?:^|\\s|[^A-Z])(\\d(?:\\.0)?)\\s*(?:単位|credits|credit)?\\s+(${gradePattern})(?:$|\\s|[^A-Z])`, 'gi');
 
   lines.forEach(line => {
+    // ノイズ除去: 明らかに背景透かしと思われる単語を一時的に置換
+    const cleanLine = line.replace(/SHIBAURA/gi, ' ');
+    
     let match;
-    // 1行の中から見つかるだけ繰り返す
-    while ((match = pairRegex.exec(line)) !== null) {
-      let creditsRaw: string | undefined;
-      let gradeRaw: string | undefined;
-
-      if (match[1]) { // "2 S" のパターン
-        creditsRaw = match[1];
-        gradeRaw = match[4];
-      } else if (match[5]) { // "S 2" のパターン
-        gradeRaw = match[5];
-        creditsRaw = match[6];
-      }
+    while ((match = pairRegex.exec(cleanLine)) !== null) {
+      const creditsRaw = match[1];
+      const gradeRaw = match[2];
 
       if (creditsRaw && gradeRaw) {
         const credits = parseFloat(creditsRaw);
         const gradeIndex = GRADE_ALIASES[gradeRaw.toUpperCase()];
         
-        if (gradeIndex !== undefined && !isNaN(credits)) {
+        // 単位数が 1, 2, 3, 4, 8 のいずれかである可能性が高い（大学の標準）
+        if (gradeIndex !== undefined && [1, 2, 3, 4, 8].includes(credits)) {
           results.push({ credits, gradeIndex });
         }
       }
