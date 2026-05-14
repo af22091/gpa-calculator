@@ -6,36 +6,29 @@ export interface ParseResult {
 }
 
 export const parseTranscriptText = (text: string): ParseResult[] => {
-  const lines = text.split(/\n/);
+  // 背景の透かし文字を強力に除去
+  const cleanText = text.replace(/SHIBAURA|INSTITUTE|TECHNOLOGY|UNIVERSITY|芝浦工業大学/gi, ' ');
+  
+  const lines = cleanText.split(/\n/);
   const results: ParseResult[] = [];
 
-  // 単一の文字（S, A, B, C）や特定の漢字（秀, 優...）を独立した単語として探す
-  // 背景の "SHIBAURA" などの単語内にある文字は無視する
+  // 評価ラベル
   const gradeKeys = ['S', 'A', 'B', 'C', 'D', '秀', '優', '良', '可', '不', '不可'];
   const gradePattern = gradeKeys.join('|');
   
-  // 単位数(1-4) と 評価 のペアを探す
-  // 芝浦工大の形式: "科目名 [単位数] [評価]" の並びを重視
-  // 単位数と評価の間に多少のノイズやスペースがあっても許容する
-  const pairRegex = new RegExp(`(?:^|\\s|[^A-Z])(\\d(?:\\.0)?)\\s*(?:単位|credits|credit)?\\s+(${gradePattern})(?:$|\\s|[^A-Z])`, 'gi');
+  // 柔軟なペアマッチング: [数字] [任意の文字] [評価]
+  // 単位数と評価の間に他の文字が挟まっていても、3文字以内ならペアとみなす
+  const pairRegex = new RegExp(`(\\d)\\s*[^\\d\\n]{0,3}?\\s*(${gradePattern})`, 'gi');
 
   lines.forEach(line => {
-    // ノイズ除去: 明らかに背景透かしと思われる単語を一時的に置換
-    const cleanLine = line.replace(/SHIBAURA/gi, ' ');
-    
     let match;
-    while ((match = pairRegex.exec(cleanLine)) !== null) {
-      const creditsRaw = match[1];
-      const gradeRaw = match[2];
+    while ((match = pairRegex.exec(line)) !== null) {
+      const credits = parseFloat(match[1]);
+      const gradeRaw = match[2].toUpperCase();
+      const gradeIndex = GRADE_ALIASES[gradeRaw];
 
-      if (creditsRaw && gradeRaw) {
-        const credits = parseFloat(creditsRaw);
-        const gradeIndex = GRADE_ALIASES[gradeRaw.toUpperCase()];
-        
-        // 単位数が 1, 2, 3, 4, 8 のいずれかである可能性が高い（大学の標準）
-        if (gradeIndex !== undefined && [1, 2, 3, 4, 8].includes(credits)) {
-          results.push({ credits, gradeIndex });
-        }
+      if (gradeIndex !== undefined && [1, 2, 3, 4, 8].includes(credits)) {
+        results.push({ credits, gradeIndex });
       }
     }
   });
